@@ -22,8 +22,4 @@ struct User: Codable, Identifiable {
         self.workouts = workouts
         self.following = following
     }
-    
-    func getFollowing() -> [User] {
-        return []
-    }
 }
