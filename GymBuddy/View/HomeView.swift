@@ -12,7 +12,8 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Text("Welcome, \(userViewModel.currentUser?.email ?? "User")!")
+                Text("Welcome, \(userViewModel.currentUser?.username ?? "User")!")
+                Text(userViewModel.currentUser?.email ?? "No email")
                     .font(.title)
                     .padding()
                 

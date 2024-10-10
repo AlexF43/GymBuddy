@@ -11,14 +11,14 @@ import FirebaseFirestore
 struct User: Codable, Identifiable {
     @DocumentID var id: String?
     let email: String
-    var displayName: String?
+    var username: String?
     var workouts: [Workout]
     var following: [String]
     
-    init(id: String? = nil, email: String, displayName: String? = nil, workouts: [Workout] = [], following: [String] = []) {
+    init(id: String? = nil, email: String, username: String? = nil, workouts: [Workout] = [], following: [String] = []) {
         self.id = id
         self.email = email
-        self.displayName = displayName
+        self.username = username
         self.workouts = workouts
         self.following = following
     }

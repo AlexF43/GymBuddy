@@ -13,6 +13,4 @@ struct LoadingScreen: View {
     }
 }
 
-#Preview {
-    LoadingScreen()
-}
+// TODO: Use Lottiefiles to make pretty loading screen

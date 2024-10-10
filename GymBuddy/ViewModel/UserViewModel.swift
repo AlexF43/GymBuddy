@@ -138,4 +138,58 @@ class UserViewModel: ObservableObject {
             }
         }
     }
+    
+    func updateUsername(username: String, completion: @escaping (Bool) -> Void) {
+        guard let userId = currentUser?.id else {
+            completion(false)
+            return
+        }
+        
+        db.collection("users").document(userId).updateData(["username": username]) { [weak self] error in
+            if let error = error {
+                print("Error updating username: \(error)")
+                completion(false)
+            } else {
+                DispatchQueue.main.async {
+                    self?.currentUser?.username = username
+                    completion(true)
+                }
+            }
+        }
+    }
+    
+    func checkAndUpdateUsername(username: String, completion: @escaping (Bool, String?) -> Void) {
+        // Check if username already exists
+        db.collection("users").whereField("username", isEqualTo: username).getDocuments { [weak self] (querySnapshot, err) in
+            if let err = err {
+                print("Error checking username: \(err)")
+                completion(false, "An error occurred. Please try again.")
+                return
+            }
+            
+            // If username already exists
+            if let documents = querySnapshot?.documents, !documents.isEmpty {
+                completion(false, "Username already taken. Please choose another.")
+                return
+            }
+            
+            // If username is unique, update it
+            guard let userId = self?.currentUser?.id else {
+                completion(false, "User not found.")
+                return
+            }
+            
+            self?.db.collection("users").document(userId).updateData(["username": username]) { error in
+                if let error = error {
+                    print("Error updating username: \(error)")
+                    completion(false, "Failed to update username. Please try again.")
+                } else {
+                    DispatchQueue.main.async {
+                        self?.currentUser?.username = username
+                        completion(true, nil)
+                    }
+                }
+            }
+        }
+    }
 }

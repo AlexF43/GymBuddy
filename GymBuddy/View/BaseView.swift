@@ -10,6 +10,7 @@ import SwiftUI
 struct BaseView: View {
     @EnvironmentObject var userViewModel: UserViewModel
     @State var tabSelection: Int = 1
+    @State private var showingUsernameEntry = false
     
     var body: some View {
         
@@ -36,6 +37,22 @@ struct BaseView: View {
                 .tag(2)
             
         }.tint(.blue)
+        
+            .onAppear {
+                checkUsername()
+            }
+            .onChange(of: userViewModel.currentUser?.username) { _ in
+                checkUsername()
+            }
+            .sheet(isPresented: $showingUsernameEntry) {
+                UsernameEntryView(isPresented: $showingUsernameEntry)
+            }
+    }
+        
+    func checkUsername() {
+        if userViewModel.currentUser?.username == nil {
+            showingUsernameEntry = true
+        }
     }
 }
 
