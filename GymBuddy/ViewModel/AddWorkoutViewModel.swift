@@ -21,7 +21,7 @@ class AddWorkoutViewModel: ObservableObject {
     }
     
     func saveWorkout(completion: @escaping (Bool, Error?) -> Void) {
-        guard let userId = Auth.auth().currentUser?.uid else {
+            guard let userId = Auth.auth().currentUser?.uid else {
             completion(false, NSError(domain: "AddWorkoutViewModel", code: 0, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"]))
             return
         }
@@ -31,15 +31,30 @@ class AddWorkoutViewModel: ObservableObject {
             "description": description,
             "date": Timestamp(date: Date()),
             "exercises": exercises.map { exercise in
-                return [
+                var exerciseData: [String: Any] = [
                     "name": exercise.name,
-                    "sets": exercise.sets.map { set in
+                    "type": exercise.type == .strength ? "strength" : "cardio"
+                ]
+                
+                let setsData = exercise.sets.map { set in
+                    switch set.data {
+                    case .strength(let reps, let weight):
                         return [
-                            "weight": set.weight,
-                            "reps": set.reps
+                            "type": "strength",
+                            "reps": reps,
+                            "weight": weight
+                        ]
+                    case .cardio(let distance, let time):
+                        return [
+                            "type": "cardio",
+                            "distance": distance,
+                            "time": time
                         ]
                     }
-                ]
+                }
+                
+                exerciseData["sets"] = setsData
+                return exerciseData
             }
         ]
         
