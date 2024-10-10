@@ -12,6 +12,7 @@ import FirebaseAuth
 class UserViewModel: ObservableObject {
     @Published var currentUser: User?
     @Published var isLoggedIn = false
+    @Published var isLoading = true
     private var db = Firestore.firestore()
     private var authStateDidChangeListenerHandle: AuthStateDidChangeListenerHandle?
 
@@ -31,6 +32,7 @@ class UserViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     self?.currentUser = nil
                     self?.isLoggedIn = false
+                    self?.isLoading = false
                 }
             }
         }
@@ -63,11 +65,17 @@ class UserViewModel: ObservableObject {
         db.collection("users").document(uid).getDocument { [weak self] document, error in
             if let error = error {
                 print("Error fetching user: \(error)")
+                DispatchQueue.main.async {
+                   self?.isLoading = false
+               }
                 return
             }
 
             guard let document = document, document.exists else {
                 print("No user document found")
+                DispatchQueue.main.async {
+                   self?.isLoading = false
+               }
                 return
             }
 
@@ -76,9 +84,13 @@ class UserViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     self?.currentUser = user
                     self?.isLoggedIn = true
+                    self?.isLoading = false
                 }
             } catch {
                 print("Error decoding user: \(error)")
+                DispatchQueue.main.async {
+                   self?.isLoading = false
+               }
             }
         }
     }

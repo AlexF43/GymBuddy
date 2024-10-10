@@ -13,8 +13,10 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if userViewModel.isLoggedIn {
-                HomeView()
+            if userViewModel.isLoading {
+                LoadingScreen()
+            } else if userViewModel.isLoggedIn {
+                BaseView()
                     .environmentObject(userViewModel)
             } else {
                 LoginView()
