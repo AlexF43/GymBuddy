@@ -8,8 +8,33 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @EnvironmentObject var viewModel: UserViewModel
+        
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationView {
+            List {
+                Section(header: Text("User Info")) {
+                    if let user = viewModel.currentUser {
+                        Text("Username: \(user.username ?? "N/A")")
+                        Text("Email: \(user.email)")
+                    }
+                }
+                
+                Section(header: Text("Workouts")) {
+                    if viewModel.workouts.isEmpty {
+                        Text("No workouts yet")
+                    } else {
+                        ForEach(viewModel.workouts) { workout in
+                            WorkoutRowView(workout: workout)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Profile")
+            .onAppear {
+                viewModel.fetchWorkouts()
+            }
+        }
     }
 }
 

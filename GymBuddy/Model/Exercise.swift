@@ -11,5 +11,9 @@ class Exercise: Codable, Identifiable {
     var id = UUID()
     var name: String = ""
     var sets: [ExerciseSet] = [ExerciseSet()]
+    
+    func addSet(set: ExerciseSet) {
+        sets.append(set)
+    }
 
 }

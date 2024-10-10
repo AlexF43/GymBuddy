@@ -10,6 +10,7 @@ import FirebaseFirestore
 
 struct Workout: Codable, Identifiable {
     @DocumentID var id: String?
-    let date: Date
-    let exercises: [Exercise]
+    var date: Date
+    var description: String?
+    var exercises: [Exercise]
 }

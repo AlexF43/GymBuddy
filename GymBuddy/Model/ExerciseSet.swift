@@ -8,7 +8,7 @@
 import Foundation
 
 struct ExerciseSet: Codable, Identifiable {
-    let id = UUID()
+    var id = UUID()
     var weight: String = ""
     var reps: String = ""
 }

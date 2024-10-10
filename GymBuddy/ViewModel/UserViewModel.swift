@@ -10,7 +10,14 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class UserViewModel: ObservableObject {
-    @Published var currentUser: User?
+    @Published var workouts: [Workout] = []
+    @Published var currentUser: User? {
+        didSet {
+            if currentUser != nil {
+                fetchWorkouts()
+            }
+        }
+    }
     @Published var isLoggedIn = false
     @Published var isLoading = true
     private var db = Firestore.firestore()
@@ -191,5 +198,27 @@ class UserViewModel: ObservableObject {
                 }
             }
         }
+    }
+    
+    func fetchWorkouts() {
+        guard let userId = currentUser?.id else { return }
+        
+        db.collection("workouts")
+            .whereField("userId", isEqualTo: userId)
+            .order(by: "date", descending: true)
+            .getDocuments { [weak self] (querySnapshot, error) in
+                if let error = error {
+                    print("Error fetching workouts: \(error)")
+                    return
+                }
+                
+                let fetchedWorkouts = querySnapshot?.documents.compactMap { document -> Workout? in
+                    try? document.data(as: Workout.self)
+                } ?? []
+                
+                DispatchQueue.main.async {
+                    self?.workouts = fetchedWorkouts
+                }
+            }
     }
 }
