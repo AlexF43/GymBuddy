@@ -14,10 +14,12 @@ import Firebase
 class AddWorkoutViewModel: ObservableObject {
     @Published var description: String = ""
     @Published var exercises: [Exercise] = []
+    @Published var addingExercise = false
     private let db = Firestore.firestore()
     
-    func addExercise() {
-        exercises.append(Exercise())
+    func addExercise(_ sampleExercise: SampleExercise) {
+        let newExercise = Exercise(name: sampleExercise.name, imageURL: sampleExercise.imgURL, type: sampleExercise.type, sets: [])
+        exercises.append(newExercise)
     }
     
     func saveWorkout(completion: @escaping (Bool, Error?) -> Void) {

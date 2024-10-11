@@ -10,13 +10,15 @@ import Foundation
 struct Exercise: Codable, Identifiable {
     let id = UUID()
     var name: String
+    var imageURL: String
     var type: ExerciseType
     var sets: [ExerciseSet]
     
-    init() {
-        self.name = ""
-        self.type = .strength
-        self.sets = []
+    init(name: String, imageURL: String, type: ExerciseType, sets: [ExerciseSet]) {
+        self.name = name
+        self.imageURL = imageURL
+        self.type = type
+        self.sets = sets
     }
     
     mutating func addSet() {

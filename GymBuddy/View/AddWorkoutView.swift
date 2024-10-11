@@ -12,31 +12,36 @@ struct AddWorkoutView: View {
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        Form {
-            TextField("Workout Description", text: $viewModel.description)
-            
-            Section(header: Text("Exercises")) {
-                ForEach($viewModel.exercises) { $exercise in
-                    AddExerciseRowView(exercise: $exercise)
+        NavigationStack {
+            Form {
+                TextField("Workout Description", text: $viewModel.description)
+                
+                Section(header: Text("Exercises")) {
+                    ForEach($viewModel.exercises) { $exercise in
+                        AddExerciseRowView(exercise: $exercise)
+                    }
+                    Button("Add Exercise") {
+                        viewModel.addingExercise = true
+                    }
                 }
-                Button("Add Exercise") {
-                    viewModel.addExercise()
-                }
-            }
-            
-            Button("Save Workout") {
-                viewModel.saveWorkout { success, error in
-                    if success {
-                        presentationMode.wrappedValue.dismiss()
-                    } else {
-                        if let error = error {
-                            print("Error saving workout: \(error.localizedDescription)")
+                
+                Button("Save Workout") {
+                    viewModel.saveWorkout { success, error in
+                        if success {
+                            presentationMode.wrappedValue.dismiss()
+                        } else {
+                            if let error = error {
+                                print("Error saving workout: \(error.localizedDescription)")
+                            }
                         }
                     }
                 }
             }
+            .sheet(isPresented: $viewModel.addingExercise) {
+                ExerciseSelectionSheet(viewModel: viewModel, isPresented: $viewModel.addingExercise)
+            }
+            .navigationTitle("Add Workout")
         }
-        .navigationTitle("Add Workout")
     }
 }
 
