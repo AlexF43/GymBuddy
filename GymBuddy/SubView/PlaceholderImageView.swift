@@ -9,11 +9,12 @@ import SwiftUI
 
 struct PlaceholderImageView: View {
     var text: String
+    var size: Int
     var body: some View {
         ZStack {
             Color.gray.opacity(0.8)
             Text(text)
-               .font(.system(size: 25, weight: .bold))
+                .font(.system(size: CGFloat(size), weight: .bold))
                .foregroundColor(.white)
         }
     }

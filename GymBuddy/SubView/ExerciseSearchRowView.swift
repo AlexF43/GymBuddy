@@ -13,7 +13,7 @@ struct ExerciseSearchRowView: View {
         HStack {
             Group {
                 if (sampleExercise.imgURL == "") {
-                    PlaceholderImageView(text: String(sampleExercise.name.prefix(1).uppercased()))
+                    PlaceholderImageView(text: String(sampleExercise.name.prefix(1).uppercased()), size: 25)
                 } else {
                     AsyncImage(url: URL(string: sampleExercise.imgURL)) { phase in
                         switch phase {
@@ -22,9 +22,9 @@ struct ExerciseSearchRowView: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                         case .failure(_), .empty:
-                            PlaceholderImageView(text: String(sampleExercise.name.prefix(1).uppercased()))
+                            PlaceholderImageView(text: String(sampleExercise.name.prefix(1).uppercased()), size: 25)
                         @unknown default:
-                            PlaceholderImageView(text: String(sampleExercise.name.prefix(1).uppercased()))
+                            PlaceholderImageView(text: String(sampleExercise.name.prefix(1).uppercased()), size: 25)
                         }
                     }
                 }

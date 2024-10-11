@@ -13,32 +13,93 @@ struct AddWorkoutView: View {
     
     var body: some View {
         NavigationStack {
-            Form {
-                TextField("Workout Description", text: $viewModel.description)
-                
-                Section(header: Text("Exercises")) {
-                    ForEach($viewModel.exercises) { $exercise in
-                        AddExerciseRowView(exercise: $exercise)
-                    }
-                    Button("Add Exercise") {
-                        viewModel.addingExercise = true
-                    }
-                }
-                
-                Button("Save Workout") {
-                    viewModel.saveWorkout { success, error in
-                        if success {
-                            presentationMode.wrappedValue.dismiss()
-                        } else {
-                            if let error = error {
-                                print("Error saving workout: \(error.localizedDescription)")
+            GeometryReader { geometry in
+                ZStack {
+                    Color(.systemGroupedBackground).ignoresSafeArea()
+                    
+                    VStack(spacing: 0) {
+                        ScrollView {
+                            VStack(spacing: 20) {
+                                TextField("Workout Notes", text: $viewModel.description, axis: .vertical)
+                                    .lineLimit(5, reservesSpace: true)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .cornerRadius(10)
+                                    .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+                                
+                                Text("EXERCISES")
+                                    .font(.footnote)
+                                    .foregroundColor(.secondary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                VStack(spacing: 15) {
+                                    ForEach($viewModel.exercises) { $exercise in
+                                        AddExerciseRowView(exercise: $exercise)
+                                            .background(Color(.systemBackground))
+                                            .cornerRadius(10)
+                                            .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+                                    }
+                                }
+                                
+                                Button(action: {
+                                    viewModel.addingExercise = true
+                                }) {
+                                    HStack {
+                                        Image(systemName: "plus.circle")
+                                            .foregroundColor(.blue)
+                                        Text("Add Exercise")
+                                            .fontWeight(.medium)
+                                            .foregroundColor(.blue)
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 12)
+                                    .background(Color.blue.opacity(0.1))
+                                    .cornerRadius(10)
+                                }
+                                .padding(.bottom, 100)
                             }
+                            .frame(width: geometry.size.width * 0.95)
                         }
+                        
+                        Spacer(minLength: 0)
+                        
+                        VStack {
+                            Button(action: {
+                                viewModel.saveWorkout { success, error in
+                                    if !success, let error = error {
+                                        print("Error saving workout: \(error.localizedDescription)")
+                                    }
+                                }
+                            }) {
+                                Text("Save Workout")
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 12)
+                                    .background(Color.blue)
+                                    .cornerRadius(10)
+                            }
+                            .disabled(viewModel.isSaving)
+                        }
+                        .padding()
+                        .background(Color(.systemBackground))
+                        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: -5)
+                    }
+                    
+                    if viewModel.isSaving {
+                        Color.black.opacity(0.3).ignoresSafeArea()
+                        ProgressView()
+                            .scaleEffect(1.5)
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     }
                 }
             }
             .sheet(isPresented: $viewModel.addingExercise) {
                 ExerciseSelectionSheet(viewModel: viewModel, isPresented: $viewModel.addingExercise)
+            }
+            .alert("Workout Saved", isPresented: $viewModel.showingSaveConfirmation) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("Your workout has been successfully saved.")
             }
             .navigationTitle("Add Workout")
         }

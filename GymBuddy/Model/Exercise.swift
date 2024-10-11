@@ -32,9 +32,9 @@ struct Exercise: Codable, Identifiable {
         } else {
             switch type {
             case .strength:
-                sets.append(ExerciseSet(data: .strength(reps: 0, weight: 0.0)))
+                sets.append(ExerciseSet(data: .strength(reps: 10, weight: 0.0)))
             case .cardio:
-                sets.append(ExerciseSet(data: .cardio(distance: 0.0, time: 0)))
+                sets.append(ExerciseSet(data: .cardio(distance: 0.0, time: 10)))
             }
         }
     }

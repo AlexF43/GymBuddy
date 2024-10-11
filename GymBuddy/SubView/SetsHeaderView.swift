@@ -15,17 +15,23 @@ struct SetsHeaderView: View {
         HStack(alignment: .center, spacing: 20) {
             Text("SET")
                 .frame(width: 50)
+            Spacer()
             if exerciseType == .strength {
                 Text("KG")
                     .frame(minWidth: 80)
-                Text("REPS")
+                Spacer()
+                Spacer()
+                Text("REPS     ")
                     .frame(minWidth: 80)
             } else {
                 Text("KM")
                     .frame(minWidth: 80)
+                Spacer()
+                Spacer()
                 Text("MIN")
                     .frame(minWidth: 80)
             }
+            Spacer()
         }
         .font(.caption)
         .foregroundColor(.gray)

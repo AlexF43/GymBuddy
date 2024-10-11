@@ -10,23 +10,27 @@ import FirebaseAuth
 import FirebaseCore
 import Firebase
 
-
 class AddWorkoutViewModel: ObservableObject {
     @Published var description: String = ""
     @Published var exercises: [Exercise] = []
     @Published var addingExercise = false
+    @Published var isSaving = false
+    @Published var showingSaveConfirmation = false
     private let db = Firestore.firestore()
     
     func addExercise(_ sampleExercise: SampleExercise) {
-        let newExercise = Exercise(name: sampleExercise.name, imageURL: sampleExercise.imgURL, type: sampleExercise.type, sets: [])
+        var newExercise = Exercise(name: sampleExercise.name, imageURL: sampleExercise.imgURL, type: sampleExercise.type, sets: [])
+        newExercise.addSet()
         exercises.append(newExercise)
     }
     
     func saveWorkout(completion: @escaping (Bool, Error?) -> Void) {
-            guard let userId = Auth.auth().currentUser?.uid else {
+        guard let userId = Auth.auth().currentUser?.uid else {
             completion(false, NSError(domain: "AddWorkoutViewModel", code: 0, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"]))
             return
         }
+        
+        isSaving = true
         
         let workoutData: [String: Any] = [
             "userId": userId,
@@ -60,14 +64,24 @@ class AddWorkoutViewModel: ObservableObject {
             }
         ]
         
-        db.collection("workouts").addDocument(data: workoutData) { error in
-            if let error = error {
-                print("Error saving workout: \(error)")
-                completion(false, error)
-            } else {
-                print("Workout successfully saved!")
-                completion(true, nil)
+        db.collection("workouts").addDocument(data: workoutData) { [weak self] error in
+            DispatchQueue.main.async {
+                self?.isSaving = false
+                if let error = error {
+                    print("Error saving workout: \(error)")
+                    completion(false, error)
+                } else {
+                    print("Workout successfully saved!")
+                    self?.showingSaveConfirmation = true
+                    self?.resetWorkout()
+                    completion(true, nil)
+                }
             }
         }
+    }
+    
+    func resetWorkout() {
+        description = ""
+        exercises = []
     }
 }
