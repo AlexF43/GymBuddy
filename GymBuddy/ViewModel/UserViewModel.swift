@@ -377,13 +377,14 @@ class UserViewModel: ObservableObject {
             }
     }
     
-    func getUserWorkouts(userId: String) {
+    func getUserWorkouts(userId: String, completion: @escaping ([Workout]?, Error?) -> Void) {
         db.collection("workouts")
             .whereField("userId", isEqualTo: userId)
             .order(by: "date", descending: true)
-            .getDocuments { [weak self] (querySnapshot, error) in
+            .getDocuments { (querySnapshot, error) in
                 if let error = error {
                     print("Error fetching workouts: \(error)")
+                    completion(nil, error)
                     return
                 }
                 
@@ -399,7 +400,7 @@ class UserViewModel: ObservableObject {
                 } ?? []
                 
                 DispatchQueue.main.async {
-                    self?.workouts = fetchedWorkouts
+                    completion(fetchedWorkouts, nil)
                 }
             }
     }
@@ -442,6 +443,8 @@ class UserViewModel: ObservableObject {
     func getPersonalBests(for userId: String, completion: @escaping ([PersonalBest]?, Error?) -> Void) {
         db.collection("personalBests")
             .whereField("userId", isEqualTo: userId)
+            .order(by: "dateAchieved", descending: true)
+            .limit(to: 10)
             .getDocuments { (querySnapshot, error) in
                 if let error = error {
                     completion(nil, error)
@@ -456,8 +459,9 @@ class UserViewModel: ObservableObject {
                         return nil
                     }
                 } ?? []
-
-                completion(personalBests, nil)
+                DispatchQueue.main.async {
+                    completion(personalBests, nil)
+                }
             }
     }
 
@@ -657,6 +661,30 @@ class UserViewModel: ObservableObject {
                 print("Personal best saved successfully")
             }
         }
+    }
+    
+    func getPersonalBests(for userId: String, limit: Int = 10, completion: @escaping ([PersonalBest]?, Error?) -> Void) {
+        db.collection("personalBests")
+            .whereField("userId", isEqualTo: userId)
+            .order(by: "dateAchieved", descending: true)
+            .limit(to: limit)
+            .getDocuments { (querySnapshot, error) in
+                if let error = error {
+                    completion(nil, error)
+                    return
+                }
+
+                let personalBests = querySnapshot?.documents.compactMap { document -> PersonalBest? in
+                    do {
+                        return try document.data(as: PersonalBest.self)
+                    } catch {
+                        print("Error decoding personal best: \(error)")
+                        return nil
+                    }
+                } ?? []
+
+                completion(personalBests, nil)
+            }
     }
     
     func isFollowing(userId: String) -> Bool {

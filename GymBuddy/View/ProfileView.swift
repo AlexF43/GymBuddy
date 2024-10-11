@@ -8,91 +8,153 @@
 import SwiftUI
 
 struct ProfileView: View {
-    var userProfile: Bool
+    let userId: String
     @EnvironmentObject var viewModel: UserViewModel
     @State private var selectedTab: Int = 0
-    @State var searchUsers = false;
+    @State private var searchUsers = false
+    @State private var personalBests: [PersonalBest] = []
+    @State private var user: User?
+    @State private var workouts: [Workout] = []
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 20) {
+        ScrollView {
+            VStack(spacing: 20) {
+                // Profile Header
+                HStack(spacing: 30) {
+                    PlaceholderImageView(text: String(user?.username?.prefix(1).uppercased() ?? "U"), size: 50)
+                        .frame(width: 100, height: 100)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                        .shadow(radius: 1)
+                    
                     HStack(spacing: 30) {
-                        PlaceholderImageView(text: String(viewModel.currentUser?.username?.prefix(1).uppercased() ?? "U"), size: 50)
-                            .frame(width: 100, height: 100)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
-                            .shadow(radius: 1)
-                        
-//                        Spacer()
-                        
-                        HStack(spacing: 30) {
-                            StatView(value: "\(viewModel.workouts.count)", title: "Workouts")
-                            StatView(value: "\(viewModel.currentUser?.following.count ?? 0)", title: "Following")
-                            StatView(value: "\(viewModel.currentUser?.followerCount ?? 0)", title: "Followers")
+                        StatView(value: "\(workouts.count)", title: "Workouts")
+                        StatView(value: "\(user?.following.count ?? 0)", title: "Following")
+                        StatView(value: "\(user?.followerCount ?? 0)", title: "Followers")
+                    }
+                }
+                .padding(.horizontal)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(user?.username ?? "Username")
+                        .font(.headline)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
+                
+                // Action Buttons
+                if isCurrentUserProfile {
+                    HStack(spacing: 8) {
+                        ProfileButton(title: "Edit Profile") {
+                            // edit username etc
                         }
                         
-//                        Spacer()
+                        ProfileButton(title: "Follow People") {
+                            searchUsers = true
+                        }
                     }
                     .padding(.horizontal)
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(viewModel.currentUser?.username ?? "Username")
-                            .font(.headline)
+                } else {
+                    ProfileButton(title: viewModel.isFollowing(userId: userId) ? "Unfollow" : "Follow") {
+                        if viewModel.isFollowing(userId: userId) {
+                            viewModel.unfollowUser(userId: userId) { _, _ in }
+                        } else {
+                            viewModel.followUser(userId: userId) { _, _ in }
+                        }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
-                    
-                    if userProfile {
-                        HStack(spacing: 8) {
-                            ProfileButton(title: "Edit Profile") {
-                                // edit username ect
-                            }
-                            
-                            ProfileButton(title: "Follow People") {
-                                searchUsers = true
-                            }
-                        }
+                }
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("PERSONAL BESTS")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
                         .padding(.horizontal)
-                    } else {
-                        ProfileButton(title: "Follow") {
-                            //follow if on someone elses page g
-                        }
-                        .padding(.horizontal)
-                    }
                     
-                    VStack(spacing: 15) {
-                        Text("WORKOUTS")
-                            .font(.footnote)
+                    if personalBests.isEmpty {
+                        Text("No personal bests yet")
                             .foregroundColor(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal)
-                        
-                        ForEach(viewModel.workouts) { workout in
-                            WorkoutRowView(workout: workout)
-                                .padding(.horizontal)
+                            .padding()
+                    } else {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 16) {
+                                ForEach(personalBests, id: \.uniqueId) { pb in
+                                    PersonalBestCardView(personalBest: pb)
+                                        .frame(width: 160)
+                                }
+                            }
+                            .padding()
                         }
                     }
-                    .padding(.top)
+                }
+                .frame(height: 160)
+//                .frame(height: 160)
+                
+                // Workouts Section
+                VStack(spacing: 15) {
+                    Text("WORKOUTS")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
+                    
+                    ForEach(workouts) { workout in
+                        WorkoutRowView(workout: workout)
+                            .padding(.horizontal)
+                    }
+                }
+                .padding(.top)
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarItems(trailing: Group {
+            if isCurrentUserProfile {
+                Button(action: {
+                    // settings
+                }) {
+                    Image(systemName: "gear")
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarItems(trailing: Group {
-                if userProfile {
-                    Button(action: {
-                        //settnig
-                    }) {
-                        Image(systemName: "gear")
-                    }
-                }
-            })
-        }
+        })
         .onAppear {
-            viewModel.fetchWorkouts()
+            fetchUserData()
+            fetchPersonalBests()
+            fetchWorkouts()
         }
-        
         .sheet(isPresented: $searchUsers) {
             SearchUsersView(viewModel: viewModel, isPresented: $searchUsers)
+        }
+    }
+    
+    private var isCurrentUserProfile: Bool {
+        return userId == viewModel.currentUser?.id
+    }
+    
+    private func fetchUserData() {
+        if isCurrentUserProfile {
+            self.user = viewModel.currentUser
+        } else {
+            viewModel.fetchUser(with: userId)
+        }
+    }
+    
+    private func fetchPersonalBests() {
+        viewModel.getPersonalBests(for: userId) { pbs, error in
+            if let error = error {
+                print("Error fetching personal bests: \(error)")
+            } else if let pbs = pbs {
+                self.personalBests = pbs
+            }
+        }
+    }
+    
+    private func fetchWorkouts() {
+        viewModel.getUserWorkouts(userId: userId) { fetchedWorkouts, error in
+            if let error = error {
+                print("Error fetching workouts: \(error)")
+            } else if let fetchedWorkouts = fetchedWorkouts {
+                self.workouts = fetchedWorkouts
+            }
         }
     }
 }

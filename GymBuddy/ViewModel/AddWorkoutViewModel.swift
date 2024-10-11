@@ -99,7 +99,7 @@ class AddWorkoutViewModel: ObservableObject {
                     return (distance1 / time1) < (distance2 / time2)
                 }) {
                     guard case let .cardio(distance, time) = maxSpeedSet.data else { continue }
-                    let speed = distance / (time / 3600) 
+                    let speed = distance / (time/60)
                     updateCardioPersonalBest(userId: userId, exerciseName: exercise.name, speed: speed)
                 }
             }

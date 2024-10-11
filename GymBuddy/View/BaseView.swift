@@ -15,7 +15,7 @@ struct BaseView: View {
     var body: some View {
         
         TabView(selection: $tabSelection) {
-            ProfileView(userProfile: true)
+            ProfileView(userId: userViewModel.currentUser?.id ?? "")
                 .tabItem{
                     Label("My Profile", systemImage: "chart.bar")
                 }

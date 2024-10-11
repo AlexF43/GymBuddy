@@ -16,6 +16,10 @@ struct PersonalBest: Codable, Identifiable {
     let type: ExerciseType
     let data: PersonalBestData
 
+    var uniqueId: String {
+        return id ?? "\(userId)_\(exerciseName)_\(dateAchieved.timeIntervalSince1970)"
+    }
+
     enum CodingKeys: String, CodingKey {
         case id, userId, exerciseName, dateAchieved, type, data
     }
