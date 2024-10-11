@@ -201,7 +201,7 @@ class UserViewModel: ObservableObject {
     }
     
     func fetchWorkouts() {
-        guard let userId = currentUser?.id else { return }
+        guard let userId = Auth.auth().currentUser?.uid else { return }
         
         db.collection("workouts")
             .whereField("userId", isEqualTo: userId)
@@ -213,7 +213,15 @@ class UserViewModel: ObservableObject {
                 }
                 
                 let fetchedWorkouts = querySnapshot?.documents.compactMap { document -> Workout? in
-                    try? document.data(as: Workout.self)
+                    print("Raw document data: \(document.data())")
+                    do {
+                        var workout = try document.data(as: Workout.self)
+                        workout.id = document.documentID
+                        return workout
+                    } catch {
+                        print("Error decoding workout: \(error)")
+                        return nil
+                    }
                 } ?? []
                 
                 DispatchQueue.main.async {

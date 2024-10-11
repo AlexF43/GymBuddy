@@ -7,14 +7,29 @@
 
 import Foundation
 
-struct Exercise: Codable, Identifiable {
-    let id = UUID()
+struct Exercise: Decodable, Identifiable {
+    let id: String
     var name: String
     var imageURL: String
     var type: ExerciseType
     var sets: [ExerciseSet]
     
+    enum CodingKeys: String, CodingKey {
+        case name, imageURL, type, sets
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = UUID().uuidString // Generate a new ID for each exercise
+        name = try container.decode(String.self, forKey: .name)
+        imageURL = try container.decode(String.self, forKey: .imageURL)
+        let typeString = try container.decode(String.self, forKey: .type)
+        type = ExerciseType(rawValue: typeString) ?? .strength // Default to strength if unknown
+        sets = try container.decode([ExerciseSet].self, forKey: .sets)
+    }
+    
     init(name: String, imageURL: String, type: ExerciseType, sets: [ExerciseSet]) {
+        self.id = UUID().uuidString
         self.name = name
         self.imageURL = imageURL
         self.type = type

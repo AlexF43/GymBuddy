@@ -14,9 +14,8 @@ struct BaseView: View {
     
     var body: some View {
         
-        // tab view along the bottom of all view, allowing the user to switch between grades, home and assignments
         TabView(selection: $tabSelection) {
-            ProfileView()
+            ProfileView(userProfile: true)
                 .tabItem{
                     Label("My Profile", systemImage: "chart.bar")
                 }

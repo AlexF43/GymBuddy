@@ -6,7 +6,7 @@
 //
 
 
-enum ExerciseType: Codable{
+enum ExerciseType: String, Codable {
     case strength
     case cardio
 }

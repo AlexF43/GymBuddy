@@ -39,6 +39,7 @@ class AddWorkoutViewModel: ObservableObject {
             "exercises": exercises.map { exercise in
                 var exerciseData: [String: Any] = [
                     "name": exercise.name,
+                    "imageURL": exercise.imageURL,
                     "type": exercise.type == .strength ? "strength" : "cardio"
                 ]
                 
@@ -46,13 +47,11 @@ class AddWorkoutViewModel: ObservableObject {
                     switch set.data {
                     case .strength(let reps, let weight):
                         return [
-                            "type": "strength",
                             "reps": reps,
                             "weight": weight
                         ]
                     case .cardio(let distance, let time):
                         return [
-                            "type": "cardio",
                             "distance": distance,
                             "time": time
                         ]
