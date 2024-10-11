@@ -8,16 +8,18 @@
 import Foundation
 import FirebaseFirestore
 
-struct User: Codable, Identifiable {
+struct User: Codable {
     @DocumentID var id: String?
-    let email: String
+    var email: String
     var username: String?
     var following: [String]
-    
-    init(id: String? = nil, email: String, username: String? = nil, following: [String] = []) {
+    var followerCount: Int
+
+    init(id: String, email: String, username: String? = nil, following: [String] = [], followerCount: Int = 0) {
         self.id = id
         self.email = email
         self.username = username
         self.following = following
+        self.followerCount = followerCount
     }
 }

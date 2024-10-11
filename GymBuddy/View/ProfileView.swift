@@ -11,6 +11,7 @@ struct ProfileView: View {
     var userProfile: Bool
     @EnvironmentObject var viewModel: UserViewModel
     @State private var selectedTab: Int = 0
+    @State var searchUsers = false;
     
     var body: some View {
         NavigationView {
@@ -23,14 +24,15 @@ struct ProfileView: View {
                             .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
                             .shadow(radius: 1)
                         
-                        Spacer()
+//                        Spacer()
                         
-                        HStack(spacing: 50) {
+                        HStack(spacing: 30) {
                             StatView(value: "\(viewModel.workouts.count)", title: "Workouts")
                             StatView(value: "\(viewModel.currentUser?.following.count ?? 0)", title: "Following")
+                            StatView(value: "\(viewModel.currentUser?.followerCount ?? 0)", title: "Followers")
                         }
                         
-                        Spacer()
+//                        Spacer()
                     }
                     .padding(.horizontal)
                     
@@ -48,7 +50,7 @@ struct ProfileView: View {
                             }
                             
                             ProfileButton(title: "Follow People") {
-                                //follwo people
+                                searchUsers = true
                             }
                         }
                         .padding(.horizontal)
@@ -87,6 +89,10 @@ struct ProfileView: View {
         }
         .onAppear {
             viewModel.fetchWorkouts()
+        }
+        
+        .sheet(isPresented: $searchUsers) {
+            SearchUsersView(viewModel: viewModel, isPresented: $searchUsers)
         }
     }
 }
