@@ -10,6 +10,7 @@ import SwiftUI
 struct AddWorkoutView: View {
     @StateObject private var viewModel = AddWorkoutViewModel()
     @Environment(\.presentationMode) var presentationMode
+    @FocusState private var focusedField: String?
     
     var body: some View {
         NavigationStack {
@@ -25,6 +26,7 @@ struct AddWorkoutView: View {
                                     .textFieldStyle(RoundedBorderTextFieldStyle())
                                     .cornerRadius(10)
                                     .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
+                                    .focused($focusedField, equals: "workoutNotes")
                                 
                                 Text("EXERCISES")
                                     .font(.footnote)
@@ -33,7 +35,7 @@ struct AddWorkoutView: View {
                                 
                                 VStack(spacing: 15) {
                                     ForEach($viewModel.exercises) { $exercise in
-                                        AddExerciseRowView(exercise: $exercise)
+                                        AddExerciseRowView(exercise: $exercise, focusedField: $focusedField)
                                             .background(Color(.systemBackground))
                                             .cornerRadius(10)
                                             .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
@@ -92,6 +94,15 @@ struct AddWorkoutView: View {
                             .progressViewStyle(CircularProgressViewStyle(tint: .white))
                     }
                 }
+                .gesture(
+                    DragGesture()
+                        .onChanged { _ in
+                            focusedField = nil
+                        }
+                )
+                .onTapGesture {
+                    focusedField = nil
+                }
             }
             .sheet(isPresented: $viewModel.addingExercise) {
                 ExerciseSelectionSheet(viewModel: viewModel, isPresented: $viewModel.addingExercise)
@@ -105,6 +116,7 @@ struct AddWorkoutView: View {
         }
     }
 }
+ 
 
 #Preview {
     AddWorkoutView()

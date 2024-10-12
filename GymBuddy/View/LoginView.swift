@@ -31,7 +31,7 @@ struct LoginView: View {
                     .autocapitalization(.none)
                     .keyboardType(.emailAddress)
                 
-                TextField("Password", text: $password)
+                SecureField("Password", text: $password)
                     .padding()
                     .background(Color(UIColor.secondarySystemBackground))
                     .cornerRadius(10)

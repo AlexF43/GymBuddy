@@ -20,7 +20,6 @@ struct ProfileView: View {
         NavigationStack{
             ScrollView {
                 VStack(spacing: 20) {
-                    // Profile Header
                     HStack(spacing: 30) {
                         PlaceholderImageView(text: String(user?.username?.prefix(1).uppercased() ?? "U"), size: 50)
                             .frame(width: 100, height: 100)
@@ -49,6 +48,10 @@ struct ProfileView: View {
                             ProfileButton(title: "Follow People") {
                                 searchUsers = true
                             }
+                            //blue background and rounded edges
+                            .foregroundStyle(.white)
+                            .background(Color.blue)
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
                         }
                         .padding(.horizontal)
                     } else {
@@ -58,7 +61,11 @@ struct ProfileView: View {
                             } else {
                                 viewModel.followUser(userId: userId) { _, _ in }
                             }
+                            updateCurrentUserData()
                         }
+                        .foregroundStyle(viewModel.isFollowing(userId: userId) ? .black : .white)
+                        .background(viewModel.isFollowing(userId: userId) ? .white : .blue)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
                         .padding(.horizontal)
                     }
                     
@@ -152,8 +159,19 @@ struct ProfileView: View {
     }
     
     private func updateCurrentUserData() {
-        viewModel.fetchCurrentUser()
-        user = viewModel.currentUser
+        if isCurrentUserProfile {
+            viewModel.fetchCurrentUser()
+            user = viewModel.currentUser
+        } else {
+            viewModel.fetchUser(with: userId) { result in
+                switch result {
+                case .success(let user):
+                    self.user = user
+                case .failure(let error):
+                    print("error fetching user \(error)")
+                }
+            }
+        }
     }
     
     private func fetchPersonalBests() {

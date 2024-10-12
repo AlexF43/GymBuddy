@@ -40,6 +40,10 @@ struct HomeView: View {
                         searchUsers = true
                     } label: {
                         Text("Add Friends")
+                            .foregroundStyle(.white)
+                            .padding()
+                            .background(Color.blue)
+                            .cornerRadius(10)
                     }
                 }
             }

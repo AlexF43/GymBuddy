@@ -9,13 +9,13 @@ import SwiftUI
 
 struct AddExerciseRowView: View {
     @Binding var exercise: Exercise
+    @FocusState.Binding var focusedField: String?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            
             HStack {
                 Group {
-                    if (exercise.imageURL == "") {
+                    if (exercise.imageURL.isEmpty) {
                         PlaceholderImageView(text: String(exercise.name.prefix(1).uppercased()), size: 15)
                     } else {
                         AsyncImage(url: URL(string: exercise.imageURL)) { phase in
@@ -50,7 +50,11 @@ struct AddExerciseRowView: View {
             SetsHeaderView(exerciseType: exercise.type)
             
             ForEach(Array(exercise.sets.enumerated()), id: \.element.id) { index, _ in
-                SetRowView(set: $exercise.sets[index], setNumber: index + 1)
+                SetRowView(
+                    set: $exercise.sets[index],
+                    setNumber: index + 1,
+                    focusedField: $focusedField
+                )
             }
             
             Button(action: {

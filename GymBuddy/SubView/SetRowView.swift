@@ -10,6 +10,7 @@ import SwiftUI
 struct SetRowView: View {
     @Binding var set: ExerciseSet
     let setNumber: Int
+    @FocusState.Binding var focusedField: String?
     
     var body: some View {
         HStack(alignment: .center, spacing: 20) {
@@ -27,6 +28,7 @@ struct SetRowView: View {
                 .multilineTextAlignment(.center)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .frame(minWidth: 80)
+                .focused($focusedField, equals: "weight_\(set.id)")
                 
                 TextField("0", value: Binding(
                     get: { reps },
@@ -36,6 +38,7 @@ struct SetRowView: View {
                 .multilineTextAlignment(.center)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .frame(minWidth: 80)
+                .focused($focusedField, equals: "reps_\(set.id)")
                 
             case .cardio(distance: let distance, time: let time):
                 TextField("0.0", value: Binding(
@@ -46,6 +49,7 @@ struct SetRowView: View {
                 .multilineTextAlignment(.center)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .frame(minWidth: 80)
+                .focused($focusedField, equals: "distance_\(set.id)")
                 
                 TextField("0", value: Binding(
                     get: { Int(time) },
@@ -55,8 +59,8 @@ struct SetRowView: View {
                 .multilineTextAlignment(.center)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .frame(minWidth: 80)
+                .focused($focusedField, equals: "time_\(set.id)")
             }
         }
     }
 }
-

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ExerciseRowView: View {
     let exercise: Exercise
+    @FocusState private var focusedField: String?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -50,7 +51,7 @@ struct ExerciseRowView: View {
             SetsHeaderView(exerciseType: exercise.type)
             
             ForEach(Array(exercise.sets.enumerated()), id: \.element.id) { index, _ in
-                SetRowView(set: binding(for: index), setNumber: index + 1)
+                SetRowView(set: binding(for: index), setNumber: index + 1, focusedField: $focusedField)
                     .disabled(true)
             }
         }
