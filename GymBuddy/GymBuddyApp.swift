@@ -13,6 +13,7 @@ import FirebaseCore
 struct GymBuddyApp: App {
     init() {
         FirebaseApp.configure()
+        NotificationService.shared.requestAuthorization()
     }
     
     var body: some Scene {

@@ -30,6 +30,9 @@ class AddWorkoutViewModel: ObservableObject {
             return
         }
         
+        NotificationService.shared.cancelAllPendingNotifications()
+        NotificationService.shared.scheduleWorkoutReminder()
+        
         isSaving = true
         
         let workoutData: [String: Any] = [
