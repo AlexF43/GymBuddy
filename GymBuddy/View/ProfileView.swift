@@ -17,105 +17,107 @@ struct ProfileView: View {
     @State private var workouts: [Workout] = []
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                // Profile Header
-                HStack(spacing: 30) {
-                    PlaceholderImageView(text: String(user?.username?.prefix(1).uppercased() ?? "U"), size: 50)
-                        .frame(width: 100, height: 100)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
-                        .shadow(radius: 1)
-                    
+        NavigationStack{
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Profile Header
                     HStack(spacing: 30) {
-                        StatView(value: "\(workouts.count)", title: "Workouts")
-                        StatView(value: "\(user?.following.count ?? 0)", title: "Following")
-                        StatView(value: "\(user?.followerCount ?? 0)", title: "Followers")
-                    }
-                }
-                .padding(.horizontal)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(user?.username ?? "Username")
-                        .font(.headline)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal)
-                
-                // Action Buttons
-                if isCurrentUserProfile {
-                    HStack(spacing: 8) {
-                        ProfileButton(title: "Edit Profile") {
-                            // edit username etc
-                        }
+                        PlaceholderImageView(text: String(user?.username?.prefix(1).uppercased() ?? "U"), size: 50)
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                            .shadow(radius: 1)
                         
-                        ProfileButton(title: "Follow People") {
-                            searchUsers = true
+                        HStack(spacing: 30) {
+                            StatView(value: "\(workouts.count)", title: "Workouts")
+                            StatView(value: "\(user?.following.count ?? 0)", title: "Following")
+                            StatView(value: "\(user?.followerCount ?? 0)", title: "Followers")
                         }
                     }
                     .padding(.horizontal)
-                } else {
-                    ProfileButton(title: viewModel.isFollowing(userId: userId) ? "Unfollow" : "Follow") {
-                        if viewModel.isFollowing(userId: userId) {
-                            viewModel.unfollowUser(userId: userId) { _, _ in }
-                        } else {
-                            viewModel.followUser(userId: userId) { _, _ in }
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("PERSONAL BESTS")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal)
                     
-                    if personalBests.isEmpty {
-                        Text("No personal bests yet")
-                            .foregroundColor(.secondary)
-                            .padding()
-                    } else {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 16) {
-                                ForEach(personalBests, id: \.uniqueId) { pb in
-                                    PersonalBestCardView(personalBest: pb)
-                                        .frame(width: 160)
-                                }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(user?.username ?? "Username")
+                            .font(.headline)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal)
+                    
+                    // Action Buttons
+                    if isCurrentUserProfile {
+                        HStack(spacing: 8) {
+                            ProfileButton(title: "Edit Profile") {
+                                // edit username etc
                             }
-                            .padding()
+                            
+                            ProfileButton(title: "Follow People") {
+                                searchUsers = true
+                            }
+                        }
+                        .padding(.horizontal)
+                    } else {
+                        ProfileButton(title: viewModel.isFollowing(userId: userId) ? "Unfollow" : "Follow") {
+                            if viewModel.isFollowing(userId: userId) {
+                                viewModel.unfollowUser(userId: userId) { _, _ in }
+                            } else {
+                                viewModel.followUser(userId: userId) { _, _ in }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("PERSONAL BESTS")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                            .padding(.horizontal)
+                        
+                        if personalBests.isEmpty {
+                            Text("No personal bests yet")
+                                .foregroundColor(.secondary)
+                                .padding()
+                        } else {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 16) {
+                                    ForEach(personalBests, id: \.uniqueId) { pb in
+                                        PersonalBestCardView(personalBest: pb)
+                                            .frame(width: 160)
+                                    }
+                                }
+                                .padding()
+                            }
                         }
                     }
-                }
-                .frame(height: 160)
-//                .frame(height: 160)
-                
-                // Workouts Section
-                VStack(spacing: 15) {
-                    Text("WORKOUTS")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal)
+                    .frame(height: 160)
+                    //                .frame(height: 160)
                     
-                    ForEach(workouts) { workout in
-                        WorkoutRowView(workout: workout)
+                    // Workouts Section
+                    VStack(spacing: 15) {
+                        Text("WORKOUTS")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal)
+                        
+                        ForEach(workouts) { workout in
+                            WorkoutRowView(workout: workout)
+                                .padding(.horizontal)
+                        }
+                    }
+                    .padding(.top)
+                }
+            }
+            .navigationBarItems(trailing: Group {
+                if isCurrentUserProfile {
+                    Button(action: {
+                        viewModel.logout()
+                    }) {
+                        Text("Logout")
                     }
                 }
-                .padding(.top)
-            }
+            })
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarItems(trailing: Group {
-            if isCurrentUserProfile {
-                Button(action: {
-                    // settings
-                }) {
-                    Image(systemName: "gear")
-                }
-            }
-        })
         .onAppear {
             fetchUserData()
             fetchPersonalBests()

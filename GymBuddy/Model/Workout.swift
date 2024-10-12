@@ -10,6 +10,7 @@ import FirebaseFirestore
 
 struct Workout: Decodable, Identifiable {
     @DocumentID var id: String?
+    var userId: String
     var date: Date
     var description: String?
     var exercises: [Exercise]
@@ -24,6 +25,7 @@ struct Workout: Decodable, Identifiable {
         date = timestamp.dateValue()
         description = try container.decodeIfPresent(String.self, forKey: .description)
         exercises = try container.decode([Exercise].self, forKey: .exercises)
+        userId = try container.decode(String.self, forKey: .userId)
     }
 }
 

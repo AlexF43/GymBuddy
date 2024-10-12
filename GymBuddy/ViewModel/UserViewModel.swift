@@ -687,7 +687,70 @@ class UserViewModel: ObservableObject {
             }
     }
     
+func getRecentWorkoutsFromFollowing(limit: Int = 20, completion: @escaping ([Workout]?, Error?) -> Void) {
+        guard let currentUserId = Auth.auth().currentUser?.uid else {
+            completion(nil, NSError(domain: "UserViewModel", code: 0, userInfo: [NSLocalizedDescriptionKey: "No current user"]))
+            return
+        }
+
+        db.collection("users").document(currentUserId).getDocument { [weak self] (document, error) in
+            if let error = error {
+                completion(nil, error)
+                return
+            }
+
+            guard let following = document?.data()?["following"] as? [String] else {
+                completion([], nil)
+                return
+            }
+
+            self?.db.collection("workouts")
+                .whereField("userId", in: following)
+                .order(by: "date", descending: true)
+                .limit(to: limit)
+                .getDocuments { (querySnapshot, error) in
+                    if let error = error {
+                        completion(nil, error)
+                        return
+                    }
+
+                    let workouts = querySnapshot?.documents.compactMap { document -> Workout? in
+                        do {
+                            return try document.data(as: Workout.self)
+                        } catch {
+                            print("Error decoding workout: \(error)")
+                            return nil
+                        }
+                    } ?? []
+
+                    completion(workouts, nil)
+                }
+        }
+    }
+
+    func getUserInfo(userId: String, completion: @escaping (User?, Error?) -> Void) {
+        db.collection("users").document(userId).getDocument { (document, error) in
+            if let error = error {
+                completion(nil, error)
+                return
+            }
+
+            guard let document = document, document.exists else {
+                completion(nil, NSError(domain: "UserViewModel", code: 1, userInfo: [NSLocalizedDescriptionKey: "User not found"]))
+                return
+            }
+
+            do {
+                let user = try document.data(as: User.self)
+                completion(user, nil)
+            } catch {
+                completion(nil, error)
+            }
+        }
+    }
+    
     func isFollowing(userId: String) -> Bool {
         return currentUser?.following.contains(userId) ?? false
     }
+    
 }
