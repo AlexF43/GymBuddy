@@ -16,40 +16,56 @@ struct SignUpView: View {
     @State private var alertMessage = ""
     
     var body: some View {
-        VStack {
+        VStack(spacing: 20) {
+            Text("Start your Adventure")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+            
             TextField("Email", text: $email)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
+                .background(Color(UIColor.secondarySystemBackground))
+                .cornerRadius(10)
                 .autocapitalization(.none)
                 .keyboardType(.emailAddress)
             
             SecureField("Password", text: $password)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
+                .background(Color(UIColor.secondarySystemBackground))
+                .cornerRadius(10)
             
             SecureField("Confirm Password", text: $confirmPassword)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
+                .background(Color(UIColor.secondarySystemBackground))
+                .cornerRadius(10)
             
-            Button("Sign Up") {
-                if password == confirmPassword {
-                    viewModel.createUser(email: email, password: password) { success, error in
-                        if !success {
-                            alertMessage = error?.localizedDescription ?? "Unknown error occurred"
-                            showingAlert = true
-                        }
-                    }
-                } else {
-                    alertMessage = "Passwords do not match"
-                    showingAlert = true
-                }
+            Button(action: performSignUp) {
+                Text("Sign Up")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
             }
-            .padding()
-            .background(Color.green)
-            .foregroundColor(.white)
-            .cornerRadius(8)
         }
         .padding()
+        .background(Color(UIColor.systemBackground))
         .navigationTitle("Sign Up")
         .alert(isPresented: $showingAlert) {
             Alert(title: Text("Sign Up Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+        }
+    }
+    
+    private func performSignUp() {
+        if password == confirmPassword {
+            viewModel.createUser(email: email, password: password) { success, error in
+                if !success {
+                    alertMessage = error?.localizedDescription ?? "Unknown error occurred"
+                    showingAlert = true
+                }
+            }
+        } else {
+            alertMessage = "Passwords do not match"
+            showingAlert = true
         }
     }
 }

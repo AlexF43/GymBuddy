@@ -21,7 +21,7 @@ struct AddWorkoutView: View {
                         ScrollView {
                             VStack(spacing: 20) {
                                 TextField("Workout Notes", text: $viewModel.description, axis: .vertical)
-                                    .lineLimit(5, reservesSpace: true)
+                                    .lineLimit(3, reservesSpace: true)
                                     .textFieldStyle(RoundedBorderTextFieldStyle())
                                     .cornerRadius(10)
                                     .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)

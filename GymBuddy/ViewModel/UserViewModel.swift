@@ -29,7 +29,7 @@ class UserViewModel: ObservableObject {
     private func setupAuthStateDidChangeListener() {
         authStateDidChangeListenerHandle = Auth.auth().addStateDidChangeListener { [weak self] _, firebaseUser in
             if let firebaseUser = firebaseUser {
-                self?.fetchUser(with: firebaseUser.uid)
+                self?.fetchCurrentUser()
             } else {
                 DispatchQueue.main.async {
                     self?.currentUser = nil
@@ -53,8 +53,8 @@ class UserViewModel: ObservableObject {
                     completion(false, error)
                 }
             } else {
-                if let uid = authResult?.user.uid {
-                    self?.fetchUser(with: uid)
+                if (authResult?.user.uid) != nil {
+                    self?.fetchCurrentUser()
                 }
                 DispatchQueue.main.async {
                     completion(true, nil)
@@ -63,37 +63,48 @@ class UserViewModel: ObservableObject {
         }
     }
 
-    func fetchUser(with uid: String) {
-        db.collection("users").document(uid).getDocument { [weak self] document, error in
-            if let error = error {
-                print("Error fetching user: \(error)")
-                DispatchQueue.main.async {
-                    self?.isLoading = false
+    func fetchCurrentUser() {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("No authenticated user found")
+            DispatchQueue.main.async {
+                self.isLoading = false
+                self.isLoggedIn = false
+            }
+            return
+        }
+        
+        fetchUser(with: uid) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let user):
+                    self?.currentUser = user
+                    self?.isLoggedIn = true
+                    self?.fetchWorkouts()
+                case .failure(let error):
+                    print("Error fetching current user: \(error)")
                 }
+                self?.isLoading = false
+            }
+        }
+    }
+
+    func fetchUser(with uid: String, completion: @escaping (Result<User, Error>) -> Void) {
+        db.collection("users").document(uid).getDocument { document, error in
+            if let error = error {
+                completion(.failure(error))
                 return
             }
 
             guard let document = document, document.exists else {
-                print("No user document found")
-                DispatchQueue.main.async {
-                    self?.isLoading = false
-                }
+                completion(.failure(NSError(domain: "UserViewModel", code: 404, userInfo: [NSLocalizedDescriptionKey: "No user document found"])))
                 return
             }
 
             do {
                 let user = try document.data(as: User.self)
-                DispatchQueue.main.async {
-                    self?.currentUser = user
-                    self?.isLoggedIn = true
-                    self?.isLoading = false
-                    self?.fetchWorkouts()
-                }
+                completion(.success(user))
             } catch {
-                print("Error decoding user: \(error)")
-                DispatchQueue.main.async {
-                    self?.isLoading = false
-                }
+                completion(.failure(error))
             }
         }
     }
@@ -211,12 +222,12 @@ class UserViewModel: ObservableObject {
 
     func updateFollowerCount(for userId: String, increment: Bool) {
         let userRef = db.collection("users").document(userId)
-        
         userRef.updateData([
             "followerCount": FirebaseFirestore.FieldValue.increment(increment ? Int64(1) : Int64(-1))
         ]) { error in
             if let error = error {
                 print("Error updating follower count: \(error)")
+                return
             }
         }
     }
@@ -476,7 +487,7 @@ class UserViewModel: ObservableObject {
     }
 
     // Fetch recent personal bests from users the current user is following
-    func getRecentPersonalBestsFromFollowing(limit: Int = 20, completion: @escaping ([PersonalBest]?, Error?) -> Void) {
+    func getRecentPersonalBestsFromFollowing(limit: Int = 50, completion: @escaping ([PersonalBest]?, Error?) -> Void) {
         guard let currentUserId = Auth.auth().currentUser?.uid else {
             completion(nil, NSError(domain: "UserViewModel", code: 0, userInfo: [NSLocalizedDescriptionKey: "No current user"]))
             return
@@ -687,7 +698,7 @@ class UserViewModel: ObservableObject {
             }
     }
     
-func getRecentWorkoutsFromFollowing(limit: Int = 20, completion: @escaping ([Workout]?, Error?) -> Void) {
+func getRecentWorkoutsFromFollowing(limit: Int = 50, completion: @escaping ([Workout]?, Error?) -> Void) {
         guard let currentUserId = Auth.auth().currentUser?.uid else {
             completion(nil, NSError(domain: "UserViewModel", code: 0, userInfo: [NSLocalizedDescriptionKey: "No current user"]))
             return

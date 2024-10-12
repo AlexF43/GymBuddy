@@ -10,38 +10,61 @@ import SwiftUI
 struct HomeView: View {
     @EnvironmentObject var viewModel: UserViewModel
     @State private var feedItems: [FeedItem] = []
-    @State private var isLoading = true
+    @State private var isLoading = false
+    @State private var searchUsers = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
-                VStack(spacing: 30) {
-                    if isLoading {
-                        ProgressView()
-                    } else {
-                        ForEach(feedItems) { item in
-                            switch item {
-                            case .workout(let workout, let user):
-                                FeedWorkoutView(workout: workout, user: user)
-                                    .padding(.horizontal)
-                            case .personalBest(let pb, let user):
-                                FeedPersonalBestView(personalBest: pb, user: user)
-                                    .padding(.horizontal)
+                if (!(viewModel.currentUser?.following.isEmpty ?? false)) {
+                    VStack(spacing: 30) {
+                        if isLoading {
+                            ProgressView()
+                        } else {
+                            ForEach(feedItems) { item in
+                                switch item {
+                                case .workout(let workout, let user):
+                                    FeedWorkoutView(workout: workout, user: user)
+                                        .padding(.horizontal)
+                                case .personalBest(let pb, let user):
+                                    FeedPersonalBestView(personalBest: pb, user: user)
+                                        .padding(.horizontal)
+                                }
                             }
                         }
                     }
+                    .padding(.vertical)
+                } else {
+                    Text("Looks like you havent added any friends yet, try adding some here.")
+                    Button {
+                        searchUsers = true
+                    } label: {
+                        Text("Add Friends")
+                    }
                 }
-                .padding(.vertical)
             }
             .navigationTitle("Friend Activity")
             .onAppear(perform: loadData)
             .refreshable {
                 loadData()
             }
+            .sheet(isPresented: $searchUsers) {
+                SearchUsersView(viewModel: viewModel, isPresented: $searchUsers)
+            }
+            .onChange(of: searchUsers) {
+                loadData()
+            }
         }
     }
 
     private func loadData() {
+        guard let user = viewModel.currentUser else {
+            return
+        }
+        
+        if (user.following.isEmpty) {
+            return
+        }
         isLoading = true
         let group = DispatchGroup()
 

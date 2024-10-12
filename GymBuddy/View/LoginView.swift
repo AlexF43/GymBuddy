@@ -18,29 +18,50 @@ struct LoginView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
+            VStack(spacing: 20) {
+                Text("Welcome Back to GymBuddy")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .multilineTextAlignment(.center)
+                
                 TextField("Email", text: $email)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+                    .background(Color(UIColor.secondarySystemBackground))
+                    .cornerRadius(10)
                     .autocapitalization(.none)
+                    .keyboardType(.emailAddress)
                 
-                SecureField("Password", text: $password)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                TextField("Password", text: $password)
+                    .padding()
+                    .background(Color(UIColor.secondarySystemBackground))
+                    .cornerRadius(10)
                 
-                Button("Login") {
-                    userViewModel.login(email: email, password: password) { success, error in
-                        if !success {
-                            alertMessage = error?.localizedDescription ?? "Unknown error occurred"
-                            showAlert = true
-                        }
-                    }
+                Button(action: performLogin) {
+                    Text("Login")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
                 }
                 
                 NavigationLink("Don't have an account? Sign Up", destination: SignUpView())
-                    .padding()
+                    .foregroundColor(.blue)
+                    .padding(.top)
             }
             .padding()
-            .alert(isPresented: $showAlert) {
-                Alert(title: Text("Login"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+            .background(Color(UIColor.systemBackground))
+        }
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Login Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+        }
+    }
+    
+    private func performLogin() {
+        userViewModel.login(email: email, password: password) { success, error in
+            if !success {
+                alertMessage = error?.localizedDescription ?? "Unknown error occurred"
+                showAlert = true
             }
         }
     }

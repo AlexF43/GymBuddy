@@ -17,7 +17,7 @@ struct BaseView: View {
         TabView(selection: $tabSelection) {
             ProfileView(userId: userViewModel.currentUser?.id ?? "")
                 .tabItem{
-                    Label("My Profile", systemImage: "chart.bar")
+                    Label("My Profile", systemImage: "person.fill")
                 }
                 .tag(0)
             

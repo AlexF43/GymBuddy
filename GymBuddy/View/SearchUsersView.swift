@@ -20,18 +20,28 @@ struct SearchUsersView: View {
                 if searchText.isEmpty {
                     Section(header: Text("Suggested Users")) {
                         ForEach(suggestedUsers, id: \.id) { user in
-                            UserRowView(user: user, viewModel: viewModel)
+                            NavigationLink {
+                                ProfileView(userId: user.id ?? "")
+                                    .environmentObject(viewModel)
+                            } label: {
+                                UserRowView(user: user, viewModel: viewModel)
+                            }
                         }
                     }
                 } else {
                     ForEach(searchResults, id: \.id) { user in
-                        UserRowView(user: user, viewModel: viewModel)
+                        NavigationLink {
+                            ProfileView(userId: user.id ?? "")
+                                .environmentObject(viewModel)
+                        } label: {
+                            UserRowView(user: user, viewModel: viewModel)
+                        }
                     }
                 }
             }
             .navigationTitle("Search Users")
             .searchable(text: $searchText, prompt: "Search users")
-            .onChange(of: searchText) { _ in
+            .onChange(of: searchText) {
                 if !searchText.isEmpty {
                     searchUsers()
                 }

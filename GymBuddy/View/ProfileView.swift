@@ -43,12 +43,8 @@ struct ProfileView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
                     
-                    // Action Buttons
                     if isCurrentUserProfile {
                         HStack(spacing: 8) {
-                            ProfileButton(title: "Edit Profile") {
-                                // edit username etc
-                            }
                             
                             ProfileButton(title: "Follow People") {
                                 searchUsers = true
@@ -66,17 +62,13 @@ struct ProfileView: View {
                         .padding(.horizontal)
                     }
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("PERSONAL BESTS")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                            .padding(.horizontal)
-                        
-                        if personalBests.isEmpty {
-                            Text("No personal bests yet")
+                    if (!personalBests.isEmpty) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("PERSONAL BESTS")
+                                .font(.footnote)
                                 .foregroundColor(.secondary)
-                                .padding()
-                        } else {
+                                .padding(.horizontal)
+                            
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 16) {
                                     ForEach(personalBests, id: \.uniqueId) { pb in
@@ -87,24 +79,30 @@ struct ProfileView: View {
                                 .padding()
                             }
                         }
+                        .frame(height: 160)
                     }
-                    .frame(height: 160)
-                    //                .frame(height: 160)
+
                     
-                    // Workouts Section
-                    VStack(spacing: 15) {
-                        Text("WORKOUTS")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal)
-                        
-                        ForEach(workouts) { workout in
-                            WorkoutRowView(workout: workout)
+                    
+                    if (!workouts.isEmpty) {
+                        VStack(spacing: 15) {
+                            Text("WORKOUTS")
+                                .font(.footnote)
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal)
+                            
+                            ForEach(workouts) { workout in
+                                NavigationLink {
+                                    WorkoutView(workout: workout)
+                                } label: {
+                                    WorkoutRowView(workout: workout)
+                                        .padding(.horizontal)
+                                }
+                            }
                         }
+                        .padding(.top)
                     }
-                    .padding(.top)
                 }
             }
             .navigationBarItems(trailing: Group {
@@ -126,6 +124,10 @@ struct ProfileView: View {
         .sheet(isPresented: $searchUsers) {
             SearchUsersView(viewModel: viewModel, isPresented: $searchUsers)
         }
+        
+        .onChange(of: searchUsers) {
+            updateCurrentUserData()
+        }
     }
     
     private var isCurrentUserProfile: Bool {
@@ -135,9 +137,23 @@ struct ProfileView: View {
     private func fetchUserData() {
         if isCurrentUserProfile {
             self.user = viewModel.currentUser
+            updateCurrentUserData()
         } else {
-            viewModel.fetchUser(with: userId)
+            viewModel.fetchUser(with: userId) { result in
+                switch result {
+                case .success(let user):
+                    self.user = user
+                case .failure(let error):
+                    print("error fetching user \(error)")
+                }
+            }
+                
         }
+    }
+    
+    private func updateCurrentUserData() {
+        viewModel.fetchCurrentUser()
+        user = viewModel.currentUser
     }
     
     private func fetchPersonalBests() {

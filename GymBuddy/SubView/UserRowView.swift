@@ -27,10 +27,6 @@ struct UserRowView: View {
                 Text(user.username ?? "No username")
                     .font(.headline)
                     .foregroundColor(.primary)
-                
-                Text(user.email)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
             }
             
             Spacer()
@@ -48,7 +44,7 @@ struct UserRowView: View {
                     .background(isFollowing ? Color.gray : Color.blue)
                     .foregroundColor(.white)
                     .cornerRadius(5)
-            }
+            }.buttonStyle(.borderless)
         }
         .padding(.vertical, 8)
     }

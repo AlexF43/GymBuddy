@@ -18,7 +18,7 @@ struct ProfileButton: View {
                 .foregroundColor(.primary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
-                .background(Color(.systemBackground))
+            
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
                         .stroke(Color.gray.opacity(0.3), lineWidth: 1)
