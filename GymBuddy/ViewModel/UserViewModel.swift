@@ -417,7 +417,6 @@ class UserViewModel: ObservableObject {
     }
     
     func checkAndUpdateUsername(username: String, completion: @escaping (Bool, String?) -> Void) {
-        // Check if username already exists
         db.collection("users").whereField("username", isEqualTo: username).getDocuments { [weak self] (querySnapshot, err) in
             if let err = err {
                 print("Error checking username: \(err)")
@@ -425,13 +424,11 @@ class UserViewModel: ObservableObject {
                 return
             }
             
-            // If username already exists
             if let documents = querySnapshot?.documents, !documents.isEmpty {
                 completion(false, "Username already taken. Please choose another.")
                 return
             }
             
-            // If username is unique, update it
             guard let userId = self?.currentUser?.id else {
                 completion(false, "User not found.")
                 return

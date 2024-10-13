@@ -9,6 +9,8 @@
 import UserNotifications
 import SwiftUI
 
+
+// class managing notifications
 class NotificationService: NSObject, ObservableObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationService()
     
@@ -17,6 +19,7 @@ class NotificationService: NSObject, ObservableObject, UNUserNotificationCenterD
         UNUserNotificationCenter.current().delegate = self
     }
     
+    // Request permission from the user to get notifications
     func requestAuthorization() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             if granted {

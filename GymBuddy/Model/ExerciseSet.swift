@@ -11,16 +11,14 @@ struct ExerciseSet: Decodable, Identifiable {
     let id: String
     var data: ExerciseData
     
-    // Initializer for creating new ExerciseSet instances
     init(data: ExerciseData) {
         self.id = UUID().uuidString
         self.data = data
     }
     
-    // Decoder initializer for Codable conformance
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = UUID().uuidString // Generate a new ID for each set
+        id = UUID().uuidString
         
         if let type = try? container.decodeIfPresent(String.self, forKey: .type) {
             switch type {

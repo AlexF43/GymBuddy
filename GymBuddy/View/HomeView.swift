@@ -55,6 +55,7 @@ struct HomeView: View {
             .sheet(isPresented: $searchUsers) {
                 SearchUsersView(viewModel: viewModel, isPresented: $searchUsers)
             }
+
             .onChange(of: searchUsers) {
                 loadData()
             }

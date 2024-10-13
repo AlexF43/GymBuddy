@@ -20,11 +20,11 @@ struct Exercise: Decodable, Identifiable {
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = UUID().uuidString // Generate a new ID for each exercise
+        id = UUID().uuidString
         name = try container.decode(String.self, forKey: .name)
         imageURL = try container.decode(String.self, forKey: .imageURL)
         let typeString = try container.decode(String.self, forKey: .type)
-        type = ExerciseType(rawValue: typeString) ?? .strength // Default to strength if unknown
+        type = ExerciseType(rawValue: typeString) ?? .strength
         sets = try container.decode([ExerciseSet].self, forKey: .sets)
     }
     

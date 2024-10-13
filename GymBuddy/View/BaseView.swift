@@ -13,45 +13,51 @@ struct BaseView: View {
     @State private var showingUsernameEntry = false
     
     var body: some View {
-        
-        TabView(selection: $tabSelection) {
-            ProfileView(userId: userViewModel.currentUser?.id ?? "")
-                .tabItem{
-                    Label("My Profile", systemImage: "person.fill")
-                }
-                .tag(0)
-            
-            HomeView()
-                .environmentObject(userViewModel)
-                .tabItem{
-                    Label("Home", systemImage: "house")
-                    
-                }
-                .tag(1)
-            
-            AddWorkoutView()
-                .tabItem {
-                    Label("Add Workout", systemImage: "figure.walk")
-                }
-                .tag(2)
-            
-        }.tint(.blue)
-        
-            .onAppear {
-                checkUsername()
+        ZStack {
+            TabView(selection: $tabSelection) {
+                ProfileView(userId: userViewModel.currentUser?.id ?? "")
+                    .tabItem {
+                        Label("My Profile", systemImage: "person.fill")
+                    }
+                    .tag(0)
+                
+                HomeView()
+                    .environmentObject(userViewModel)
+                    .tabItem {
+                        Label("Home", systemImage: "house")
+                    }
+                    .tag(1)
+                
+                AddWorkoutView()
+                    .tabItem {
+                        Label("Add Workout", systemImage: "figure.walk")
+                    }
+                    .tag(2)
             }
-            .onChange(of: userViewModel.currentUser?.username) { _ in
-                checkUsername()
-            }
-            .sheet(isPresented: $showingUsernameEntry) {
+            .tint(.blue)
+            
+            if showingUsernameEntry {
+                Color.black.opacity(0.3)
+                    .edgesIgnoringSafeArea(.all)
+                    .transition(.opacity)
+                
                 UsernameEntryView(isPresented: $showingUsernameEntry)
+                    .transition(.move(edge: .bottom))
             }
+        }
+        .animation(.default, value: showingUsernameEntry)
+        .onAppear {
+            checkUsername()
+        }
+        .onChange(of: userViewModel.currentUser?.username) { _ in
+            checkUsername()
+        }
     }
         
     func checkUsername() {
-        if userViewModel.currentUser?.username == nil {
-            showingUsernameEntry = true
-        }
+        showingUsernameEntry = userViewModel.currentUser?.username == nil ||
+                               userViewModel.currentUser?.username == "" ||
+                               userViewModel.currentUser?.username == "Username"
     }
 }
 
