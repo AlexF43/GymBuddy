@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// view that forces the user to enter a username if they do not have one
 struct UsernameEntryView: View {
     @EnvironmentObject var viewModel: UserViewModel
     @Binding var isPresented: Bool

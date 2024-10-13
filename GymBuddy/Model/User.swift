@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
+/// user model, containing all a users information
 struct User: Codable {
     @DocumentID var id: String?
     var email: String

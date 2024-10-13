@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// set for an exercide, has different data depending on if it is for cardio or strength
 struct ExerciseSet: Decodable, Identifiable {
     let id: String
     var data: ExerciseData

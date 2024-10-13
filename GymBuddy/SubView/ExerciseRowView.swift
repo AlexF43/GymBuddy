@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// row view for exercises
 struct ExerciseRowView: View {
     let exercise: Exercise
     @FocusState private var focusedField: String?

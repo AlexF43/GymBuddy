@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// card view for showing personal bests on profile
 struct PersonalBestCardView: View {
     let personalBest: PersonalBest
     

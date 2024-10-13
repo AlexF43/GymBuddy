@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
+/// personal best informtation, contains different data depending on if its for strength or cardio
 struct PersonalBest: Codable, Identifiable {
     @DocumentID var id: String?
     let userId: String

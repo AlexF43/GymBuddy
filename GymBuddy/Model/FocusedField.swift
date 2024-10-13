@@ -7,7 +7,7 @@
 
 import Foundation
 
-
+/// enum for handeling text field hiding with a potnentially infinite number of textfiends in the addworkout view
 enum FocusedField: Hashable, Equatable {
     case weight(id: UUID)
     case reps(id: UUID)

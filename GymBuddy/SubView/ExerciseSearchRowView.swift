@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// row view for viewing saved workouts
 struct ExerciseSearchRowView: View {
     var sampleExercise: SampleExercise
     var body: some View {

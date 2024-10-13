@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// base add workout view
 struct AddWorkoutView: View {
     @StateObject private var viewModel = AddWorkoutViewModel()
     @Environment(\.presentationMode) var presentationMode

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// used to show the current user or other users profiles
 struct ProfileView: View {
     let userId: String
     @EnvironmentObject var viewModel: UserViewModel

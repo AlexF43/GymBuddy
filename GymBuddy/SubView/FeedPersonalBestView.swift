@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// personal best row view with the user name and image above personal best
 struct FeedPersonalBestView: View {
     let personalBest: PersonalBest
     let user: User?

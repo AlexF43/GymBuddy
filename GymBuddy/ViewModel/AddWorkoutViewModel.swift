@@ -10,6 +10,7 @@ import FirebaseAuth
 import FirebaseCore
 import Firebase
 
+/// viewmodel responsible for adding and managing workouts
 class AddWorkoutViewModel: ObservableObject {
     @Published var description: String = ""
     @Published var exercises: [Exercise] = []

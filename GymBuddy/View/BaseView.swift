@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// base view that a logged in user is shown, responsible for setting blank usernames and controlling the tab bar at the bottom of the screen
 struct BaseView: View {
     @EnvironmentObject var userViewModel: UserViewModel
     @State var tabSelection: Int = 1

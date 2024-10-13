@@ -7,7 +7,7 @@
 
 import Foundation
 
-
+/// different data for strength for cardio
 enum ExerciseData: Codable {
     case strength(reps: Int, weight: Double)
     case cardio(distance: Double, time: TimeInterval)

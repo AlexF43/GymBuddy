@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// personal best row view with the user name and image above workout
 struct FeedWorkoutView: View {
     let workout: Workout
     let user: User?

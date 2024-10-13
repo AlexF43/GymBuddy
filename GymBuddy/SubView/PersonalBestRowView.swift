@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// row view for showing personal bests on home screen
 struct PersonalBestRowView: View {
     let personalBest: PersonalBest
     

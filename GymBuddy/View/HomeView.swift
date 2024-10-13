@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// home screen, shows friends workouts and pb's
 struct HomeView: View {
     @EnvironmentObject var viewModel: UserViewModel
     @State private var feedItems: [FeedItem] = []

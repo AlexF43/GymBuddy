@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// screen allowing users to sign up to the application
 struct SignUpView: View {
     @EnvironmentObject var viewModel: UserViewModel
     @State private var email = ""

@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// exercise model, can be of type cardio or strength
 struct Exercise: Decodable, Identifiable {
     let id: String
     var name: String

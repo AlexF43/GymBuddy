@@ -9,6 +9,7 @@ import Foundation
 import FirebaseFirestore
 import FirebaseAuth
 
+/// viewmodel containg all firebase user and personal best interaction
 class UserViewModel: ObservableObject {
     @Published var currentUser: User?
     @Published var isLoggedIn = false

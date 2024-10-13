@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// default view for displaying in place of an image, used for profiles and workouts
 struct PlaceholderImageView: View {
     var text: String
     var size: Int

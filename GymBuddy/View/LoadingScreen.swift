@@ -7,9 +7,13 @@
 
 import SwiftUI
 
+/// loading screen for when retreiving infomation from firebase
 struct LoadingScreen: View {
     var body: some View {
-        Text("Loading, please wait")
+        VStack {
+            Text("Loading, please wait")
+            ProgressView()
+        }
     }
 }
 

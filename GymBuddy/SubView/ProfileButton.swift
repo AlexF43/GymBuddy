@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// general button for use on profile for addding friends
 struct ProfileButton: View {
     let title: String
     let action: () -> Void

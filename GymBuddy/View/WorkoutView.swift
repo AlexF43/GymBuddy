@@ -18,11 +18,6 @@ struct WorkoutView: View {
                     
                     ScrollView {
                         VStack(spacing: 20) {
-//                            Text(workout.date, style: .date)
-//                                .font(.headline)
-//                                .foregroundColor(.secondary)
-//                                .frame(maxWidth: .infinity, alignment: .leading)
-//                                .padding(.horizontal)
                             
                             if let description = workout.description {
                                 Text(description)

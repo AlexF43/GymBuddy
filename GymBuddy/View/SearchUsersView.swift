@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// view, searchable list of all users in the app, when nothing is searched show screen of suggested users (most followed)
 struct SearchUsersView: View {
     @ObservedObject var viewModel: UserViewModel
     @Binding var isPresented: Bool

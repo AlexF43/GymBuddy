@@ -7,8 +7,9 @@
 
 import Foundation
 
-    
+/// get exercises from csv file for use in exercise searching
 func readExercisesFromCSV() -> [SampleExercise] {
+    // get file location
     guard let fileURL = Bundle.main.url(forResource: "CommonExercises", withExtension: "csv") else {
         print("CSV file not found")
         return []
@@ -18,9 +19,10 @@ func readExercisesFromCSV() -> [SampleExercise] {
         let content = try String(contentsOf: fileURL, encoding: .utf8)
         let lines = content.components(separatedBy: .newlines)
         
-        // skip headder
+        // skip headder in csv
         let dataLines = lines.dropFirst()
         
+        // map csv data to sample exercise
         return dataLines.compactMap { line in
             let items = line.components(separatedBy: ",")
             guard items.count >= 4 else { return nil }

@@ -9,6 +9,7 @@ import SwiftUI
 import Firebase
 import FirebaseAuth
 
+/// login view, allows user to enter their details
 struct LoginView: View {
     @EnvironmentObject var userViewModel: UserViewModel
     @State private var email = ""

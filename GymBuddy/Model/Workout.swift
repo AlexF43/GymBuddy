@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
+/// workout model, containg a list of exercises and other infomation, matches model in firebase
 struct Workout: Decodable, Identifiable {
     @DocumentID var id: String?
     var userId: String

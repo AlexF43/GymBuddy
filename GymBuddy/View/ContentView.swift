@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 
+/// content view, shows different screen depedning on the auth state of the app
 struct ContentView: View {
     @StateObject var userViewModel = UserViewModel()
 

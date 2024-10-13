@@ -6,6 +6,7 @@
 //
 import SwiftUI
 
+/// sheet to search for exercise from csv
 struct ExerciseSelectionSheet: View {
     @ObservedObject var viewModel: AddWorkoutViewModel
     @Binding var isPresented: Bool

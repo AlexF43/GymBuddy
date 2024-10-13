@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// row view for use in add workout, contains the workouts sets
 struct AddExerciseRowView: View {
     @Binding var exercise: Exercise
     @FocusState.Binding var focusedField: String?

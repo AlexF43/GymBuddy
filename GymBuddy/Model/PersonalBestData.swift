@@ -5,6 +5,7 @@
 //  Created by Alex Fogg on 11/10/2024.
 //
 
+/// types of personal best data
 enum PersonalBestData: Codable, Equatable {
     case strength(weight: Int)
     case cardio(speed: Double)
